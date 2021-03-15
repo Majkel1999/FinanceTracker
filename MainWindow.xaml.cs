@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -23,8 +24,13 @@ namespace FinanceTracker
         public MainWindow()
         {
             InitializeComponent();
-            StockPrice price = ApiRequest.GetData();
-            TextBlock.Text = price.Symbol + ":" + price.Price;
+            //StockPrice price = ApiRequest.GetData("AAPL");
+            //TextBlock.Text = price.Symbol + ":" + price.Price;
+            List<StockIndex> list = ApiRequest.GetStockIndexes();
+            foreach(StockIndex stock in list)
+            {
+                Trace.WriteLine(stock.Symbol + ":" + stock.Name + ":" + stock.Price);
+            }
         }
     }
 }
