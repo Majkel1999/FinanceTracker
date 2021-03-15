@@ -84,7 +84,7 @@ namespace FinanceTracker
                 historicalIndexData.Add(new HistoricalIndexData
                 {
                     symbol = historicalData.symbol,
-                    price = data.price,
+                    price = data.high,
                     date = data.date,
                     changeOverTime = data.changeOverTime,
                     volume = data.volume

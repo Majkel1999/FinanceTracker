@@ -16,7 +16,7 @@ namespace FinanceTracker
     public class HistoricalData
     {
         public DateTime date;
-        public double price;
+        public double high;
         public double volume;
         public double changeOverTime;
     }
