@@ -23,7 +23,8 @@ namespace FinanceTracker
         public MainWindow()
         {
             InitializeComponent();
-            TextBlock.Text = ApiRequest.GetData();
+            StockPrice price = ApiRequest.GetData();
+            TextBlock.Text = price.Symbol + ":" + price.Price;
         }
     }
 }
