@@ -26,11 +26,13 @@ namespace FinanceTracker
             InitializeComponent();
             //StockPrice price = ApiRequest.GetData("AAPL");
             //TextBlock.Text = price.Symbol + ":" + price.Price;
-            List<StockIndex> list = ApiRequest.GetStockIndexes();
-            foreach(StockIndex stock in list)
-            {
-                Trace.WriteLine(stock.Symbol + ":" + stock.Name + ":" + stock.Price);
-            }
+            //List<StockIndex> list = ApiRequest.GetStockIndexes();
+            //foreach(StockIndex stock in list)
+            //{
+            //    Trace.WriteLine(stock.Symbol + ":" + stock.Name + ":" + stock.Price);
+            //}
+
+
         }
     }
 }
