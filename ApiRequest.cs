@@ -16,37 +16,33 @@ using System.Diagnostics;
  */
 namespace FinanceTracker
 {
-    public class StockPrice
-    {
-        public string Symbol { get; set; }
-        public double Price { get; set; }
-        public ulong Volume { get; set; }
-
-    }
-
-    public class StockIndex
-    {
-        public string Symbol { get; set; }
-        public string Name { get; set; }
-        public double Price { get; set; }
-    }
-
+    /// <summary>
+    /// Static class responsible for obtaining data from the server by public API.
+    /// APIKey can be obtained at https://financialmodelingprep.com/
+    /// </summary>
     static class ApiRequest
     {
-        const string APIKey = "b9d32703beec60431f239bcfae715d7f";
-        static HttpClient client = new HttpClient();
-
+        private const string APIKey = "b9d32703beec60431f239bcfae715d7f";
+        private static HttpClient m_client = new HttpClient();
+        /// <summary>
+        /// Creates static class with the base URL of the default website.
+        /// Prepare for accepting JSON
+        /// </summary>
         static ApiRequest()
         {
-            client.BaseAddress = new Uri("https://financialmodelingprep.com/");
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            m_client.BaseAddress = new Uri("https://financialmodelingprep.com/");
+            m_client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
-
-        public static StockPrice GetData(string stockIndex)
+        /// <summary>
+        /// Gets StockPrice from the server for the given index
+        /// </summary>
+        /// <param name="stockIndex">Index symbol for which to get data for</param>
+        /// <returns>Data obtained from the server</returns>
+        public static StockPrice GetStockPrice(string stockIndex)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query["apikey"] = APIKey;
-            HttpResponseMessage response = client.GetAsync("/api/v3/quote-short/" + stockIndex + "?" + query.ToString()).Result;
+            HttpResponseMessage response = m_client.GetAsync("/api/v3/quote-short/" + stockIndex + "?" + query.ToString()).Result;
             string result = response.Content.ReadAsStringAsync().Result;
             result = result.TrimStart('[');
             result = result.TrimEnd(']');
@@ -54,16 +50,47 @@ namespace FinanceTracker
             return JsonConvert.DeserializeObject<StockPrice>(result);
 
         }
+        /// <summary>
+        /// Gets a list of all stock indexes avalible on the market. Removes all the indexes
+        /// for which the exchange is not primary by filtering symbols for '.'
+        /// </summary>
+        /// <returns>List of all stock indexes</returns>
         public static List<StockIndex> GetStockIndexes()
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             query["apikey"] = APIKey;
-            HttpResponseMessage response = client.GetAsync("/api/v3/available-traded/list?" + query.ToString()).Result;
+            HttpResponseMessage response = m_client.GetAsync("/api/v3/available-traded/list?" + query.ToString()).Result;
             string result = response.Content.ReadAsStringAsync().Result;
             List<StockIndex> indexList = JsonConvert.DeserializeObject<StockIndex[]>(result).ToList();
-            indexList.RemoveAll(s => s.Symbol.Contains('.'));
+            indexList.RemoveAll(s => s.symbol.Contains('.'));
             return indexList;
-            
+
+        }
+        /// <summary>
+        /// Gets a list of historical price data for a given index.
+        /// </summary>
+        /// <param name="stockIndex">Index symbol for which to get data for</param>
+        /// <returns>List of all historical prices</returns>
+        public static List<HistoricalIndexData> GetHistoricalData(string stockIndex)
+        {
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["apikey"] = APIKey;
+            HttpResponseMessage response = m_client.GetAsync("/api/v3/historical-price-full/" + stockIndex + "?" + query.ToString()).Result;
+            string result = response.Content.ReadAsStringAsync().Result;
+            HistoricalDataList historicalData = JsonConvert.DeserializeObject<HistoricalDataList>(result);
+            List<HistoricalIndexData> historicalIndexData = new List<HistoricalIndexData>();
+            foreach (HistoricalData data in historicalData.historical)
+            {
+                historicalIndexData.Add(new HistoricalIndexData
+                {
+                    symbol = historicalData.symbol,
+                    price = data.price,
+                    date = data.date,
+                    changeOverTime = data.changeOverTime,
+                    volume = data.volume
+                });
+            }
+            return historicalIndexData;
         }
     }
 }
