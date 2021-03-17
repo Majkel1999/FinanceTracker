@@ -22,7 +22,7 @@ namespace FinanceTracker
     /// </summary>
     static class ApiRequest
     {
-        private const string APIKey = "b9d32703beec60431f239bcfae715d7f";
+        private const string APIKey = "0959a6645818c0ead96715ab44135e89";
         private static HttpClient m_client = new HttpClient();
         /// <summary>
         /// Creates static class with the base URL of the default website.
@@ -79,16 +79,19 @@ namespace FinanceTracker
             string result = response.Content.ReadAsStringAsync().Result;
             HistoricalDataList historicalData = JsonConvert.DeserializeObject<HistoricalDataList>(result);
             List<HistoricalIndexData> historicalIndexData = new List<HistoricalIndexData>();
+            uint i = 0;
             foreach (HistoricalData data in historicalData.historical)
             {
                 historicalIndexData.Add(new HistoricalIndexData
                 {
+                    ID=i,
                     symbol = historicalData.symbol,
                     price = data.high,
                     date = data.date,
                     changeOverTime = data.changeOverTime,
                     volume = data.volume
                 });
+                i++;
             }
             return historicalIndexData;
         }

@@ -24,6 +24,6 @@ namespace FinanceTracker
     public class HistoricalDataList
     {
         public string symbol;
-        public IList<HistoricalData> historical;
+        public List<HistoricalData> historical =new List<HistoricalData>();
     }
 }

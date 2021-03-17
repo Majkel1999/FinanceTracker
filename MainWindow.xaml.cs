@@ -21,17 +21,30 @@ namespace FinanceTracker
     /// </summary>
     public partial class MainWindow : Window
     {
+        public List<StockIndex> stockIndexesList { get; set; }
         public MainWindow()
         {
             InitializeComponent();
+            DatabaseController dbController = new DatabaseController();
+            if (dbController.IsEmptyDB())
+            {
+                dbController.FillDB();
+            }
+            stockIndexesList = dbController.stockIndexes.OrderBy(b => b.symbol).ToList();
+            //ListOfStocks.ItemsSource = stockIndexesList;
+            //ListOfStocks.DisplayMemberPath = "symbol";
+            DataContext = this;
+
+            //dbController.Add(new StockIndex { })
+            
             //StockPrice price = ApiRequest.GetData("AAPL");
             //TextBlock.Text = price.Symbol + ":" + price.Price;
-            List<HistoricalIndexData> list = ApiRequest.GetHistoricalData("AAPL");
+            //List<HistoricalIndexData> list = ApiRequest.GetHistoricalData("AAPL");
 
-            foreach (HistoricalIndexData stock in list)
-            {
-                Trace.WriteLine(stock.symbol + ":" + stock.date + ":" + stock.price);
-            }
+            //foreach (HistoricalIndexData stock in list)
+            //{
+            //    Trace.WriteLine(stock.symbol + ":" + stock.date + ":" + stock.price);
+            //}
         }
     }
 }

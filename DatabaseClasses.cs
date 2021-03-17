@@ -1,23 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinanceTracker
 {
     public class StockIndex
     {
-        public string symbol;
-        public string name;
-        public double price;
+        [Key] public string symbol { get; set; }
+        public string name { get; set; }
+        public double price { get; set; }
     }
     public class HistoricalIndexData
     {
-        public string symbol;
-        public DateTime date;
-        public double price;
-        public double volume;
-        public double changeOverTime;
+        [Key] public uint ID { get; set; }
+        public string symbol { get; set; }
+        public DateTime date { get; set; }
+        public double price { get; set; }
+        public double volume { get; set; }
+        public double changeOverTime { get; set; }
     }
+
+    public class MyStock
+    {
+        [Key] public uint transactionID { get; set; }
+        public string symbol { get; set; }
+        public DateTime transactionDate { get; set; }
+        public double transactionVolume { get; set; }
+        public double indexPrice { get; set; }
+        public double profit { get; set; }
+
+    }
+
 }
