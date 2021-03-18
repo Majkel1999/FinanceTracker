@@ -52,9 +52,10 @@ namespace FinanceTracker
         }
         /// <summary>
         /// Gets a list of all stock indexes avalible on the market. Removes all the indexes
-        /// for which the exchange is not primary by filtering symbols for '.'
+        /// for which the exchange is not primary by filtering symbols for '.', price is 0 or 
+        /// name is null or empty.
         /// </summary>
-        /// <returns>List of all stock indexes</returns>
+        /// <returns>List of all stock indexes with full data</returns>
         public static List<StockIndex> GetStockIndexes()
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
@@ -63,6 +64,9 @@ namespace FinanceTracker
             string result = response.Content.ReadAsStringAsync().Result;
             List<StockIndex> indexList = JsonConvert.DeserializeObject<StockIndex[]>(result).ToList();
             indexList.RemoveAll(s => s.symbol.Contains('.'));
+            indexList.RemoveAll(s => s.price == 0);
+            indexList.RemoveAll(s => s.name == null);
+            indexList.RemoveAll(s => s.name == "");
             return indexList;
 
         }
