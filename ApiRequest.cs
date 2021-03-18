@@ -67,13 +67,42 @@ namespace FinanceTracker
 
         }
         /// <summary>
-        /// Gets a list of historical price data for a given index.
+        /// Gets a list of all historical price data for a given index.
         /// </summary>
         /// <param name="stockIndex">Index symbol for which to get data for</param>
         /// <returns>List of all historical prices</returns>
         public static List<HistoricalIndexData> GetHistoricalData(string stockIndex)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
+            query["apikey"] = APIKey;
+            HttpResponseMessage response = m_client.GetAsync("/api/v3/historical-price-full/" + stockIndex + "?" + query.ToString()).Result;
+            string result = response.Content.ReadAsStringAsync().Result;
+            HistoricalDataList historicalData = JsonConvert.DeserializeObject<HistoricalDataList>(result);
+            List<HistoricalIndexData> historicalIndexData = new List<HistoricalIndexData>();
+            foreach (HistoricalData data in historicalData.historical)
+            {
+                historicalIndexData.Add(new HistoricalIndexData
+                {
+                    symbol = historicalData.symbol,
+                    price = data.high,
+                    date = data.date,
+                    changeOverTime = data.changeOverTime,
+                    volume = data.volume
+                });
+            }
+            return historicalIndexData;
+        }
+        /// <summary>
+        /// /// Gets a list of historical price data for a given index from the given start date.
+        /// </summary>
+        /// <param name="stockIndex">Index symbol for which to get data for</param>
+        /// <param name="startDate">Date from which to get data from</param>
+        /// <returns>List of historical prices</returns>
+        public static List<HistoricalIndexData> GetHistoricalData(string stockIndex, DateTime startDate)
+        {
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["from"] = startDate.ToString("yyyy-MM-dd");
+            query["to"] = DateTime.Today.ToString("yyyy-MM-dd");
             query["apikey"] = APIKey;
             HttpResponseMessage response = m_client.GetAsync("/api/v3/historical-price-full/" + stockIndex + "?" + query.ToString()).Result;
             string result = response.Content.ReadAsStringAsync().Result;
