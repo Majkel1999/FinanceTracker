@@ -6,18 +6,24 @@ using System.Threading.Tasks;
 
 namespace FinanceTracker
 {
-    public class StockIndex
+    public class StockPrice
     {
         public string symbol;
-        public string name;
         public double price;
+        public ulong volume;
+
     }
-    public class HistoricalIndexData
+    public class HistoricalData
     {
-        public string symbol;
         public DateTime date;
-        public double price;
+        public double high;
         public double volume;
         public double changeOverTime;
+    }
+
+    public class HistoricalDataList
+    {
+        public string symbol;
+        public List<HistoricalData> historical =new List<HistoricalData>();
     }
 }
