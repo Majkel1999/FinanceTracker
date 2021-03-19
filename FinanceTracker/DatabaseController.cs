@@ -45,23 +45,43 @@ namespace FinanceTracker
 
         public void UpdateHistoricalTable(string stockIndex)
         {
-            var lastIndex = historicalIndexes.Where(b => b.symbol == stockIndex).OrderBy(b => b.date).Last();
-            List<HistoricalIndexData> historicalData = ApiRequest.GetHistoricalData(stockIndex,lastIndex.date.AddDays(1));
+            DateTime date;
+            if (historicalIndexes.Where(x => x.symbol == stockIndex).Any())
+            {
+                var lastIndex = historicalIndexes.Where(b => b.symbol == stockIndex).OrderBy(b => b.date).Last();
+                date = lastIndex.date;
+            }
+            else
+            {
+                date = DateTime.Today.AddYears(-1);
+            }
+
+            List<HistoricalIndexData> historicalData = ApiRequest.GetHistoricalData(stockIndex, date);
             foreach (HistoricalIndexData data in historicalData)
             {
                 this.Add(data);
             }
+            var index = stockIndexes.Where(x => x.symbol == stockIndex).FirstOrDefault();
+            index.price = historicalData[0].price;
             this.SaveChanges();
         }
 
         public void UpdateStockIndexesTable()
         {
-            HistoricalIndexData lastIndex;
-            foreach (StockIndex stock in stockIndexes)
+            List<StockIndex> stockIndexesList = ApiRequest.GetStockIndexes();
+            foreach (StockIndex stock in stockIndexesList)
             {
-                lastIndex = historicalIndexes.Where(b => b.symbol == stock.symbol).OrderBy(b => b.date).Last();
-                stock.price = lastIndex.price;
+                var index = stockIndexes.Where(x => x.symbol == stock.symbol).FirstOrDefault();
+                if (index == null)
+                {
+                    this.Add(stock);
+                }
+                else
+                {
+                    index.price = stock.price;
+                }
             }
+            this.SaveChanges();
         }
     }
 }

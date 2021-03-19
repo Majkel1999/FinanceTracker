@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FinanceTracker"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Name="NameOfWindow" Background="#FF252525"
+        Title="MainWindow" Height="720" Width="1280" Name="NameOfWindow" Background="#FF252525"
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
@@ -39,7 +39,7 @@
                             </LinearGradientBrush>
                         </TextBox.Background>
                     </TextBox>
-                    <ListBox x:Name="ListOfStocks" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding stockIndexesList, Mode=OneWay}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch" SelectionChanged="ListOfStocks_SelectionChanged" Background="#FF464646"  Margin="-3,0,0,-3" Foreground="White">
+                    <ListBox x:Name="ListOfStocks" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding stockIndexesList, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch" SelectionChanged="ListOfStocks_SelectionChanged" Background="#FF464646"  Margin="-3,0,0,-3" Foreground="White">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderThickness="0 0 0 1" BorderBrush="Gray">
@@ -54,9 +54,7 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="{Binding Path=symbol}" Grid.Row="0" Grid.Column="0" FontSize="14" FontFamily="Calibri" FontWeight="Bold" TextWrapping="WrapWithOverflow"/>
                                         <TextBlock Text="{Binding Path=name}" Grid.Row="1" Grid.Column="0" FontSize="11" FontFamily="Calibri" TextWrapping="WrapWithOverflow"/>
-
-                                        <TextBlock Text="{Binding Path=price}" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" FontSize="14" FontFamily="Calibri" TextWrapping="WrapWithOverflow" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-
+                                        <TextBlock Text="{Binding Path=price, StringFormat={}{0:0.00}$}" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" FontSize="14" FontFamily="Calibri" TextWrapping="WrapWithOverflow" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -67,13 +65,16 @@
                             <RowDefinition Height="3*"/>
                             <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
-                        <lvc:CartesianChart DataTooltip="{x:Null}" Zoom="X" DisableAnimations="True" Hoverable="False" Margin="10 10 5 10">
+                        <lvc:CartesianChart x:Name="lineChart" DataTooltip="{x:Null}" Zoom="X" DisableAnimations="True" Hoverable="False" Margin="15,0,0,20">
                             <lvc:CartesianChart.Series>
                                 <lvc:LineSeries x:Name="lineSeriesChart"/>
                             </lvc:CartesianChart.Series>
                             <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Date" LabelFormatter="{Binding Formatter}"></lvc:Axis>
+                                <lvc:Axis Title="Date" LabelFormatter="{Binding XFormatter}"></lvc:Axis>
                             </lvc:CartesianChart.AxisX>
+                            <lvc:CartesianChart.AxisY>
+                                <lvc:Axis Title="Price" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+                            </lvc:CartesianChart.AxisY>
                         </lvc:CartesianChart>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
@@ -81,7 +82,17 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="1" Margin="5" x:Name="BuyButton" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#00707070" OpacityMask="#CC000000" Focusable="False">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Center" >Quantity</TextBlock>
+                                <TextBox x:Name="QuantityTextBox" Text="{Binding buyQuantity,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="10 0 10 20" Grid.Row="1" TextChanged="QuantityTextBox_TextChanged"/>
+                                <TextBlock Grid.Row="2" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Path=buyPrice,UpdateSourceTrigger=PropertyChanged, StringFormat={}Price:{0:0.00}}" />
+                            </Grid>
+                            <Button x:Name="BuyButton" Grid.Column="1" Margin="5" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#00707070" OpacityMask="#CC000000" Focusable="False" Click="BuyButton_Click">
                                 <Button.Background>
                                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                         <GradientStop Color="#FFE2E2E2" Offset="0.003"/>
@@ -90,14 +101,28 @@
                                 </Button.Background>
                                 Buy
                             </Button>
-                            <Button Grid.Column="2" Margin="5" x:Name="UpdateButton" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#00707070" OpacityMask="#CA000000" Focusable="False">
-                                <Button.Background>
-                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                        <GradientStop Color="#FFE2E2E2"/>
-                                        <GradientStop Color="#FF5D5D5D" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Button.Background> Update
-                            </Button>
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <Button Grid.Row="0" Margin="5" x:Name="UpdateAllButton" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#00707070" OpacityMask="#CA000000" Focusable="False" Click="UpdateAllButton_Click">
+                                    <Button.Background>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="#FFE2E2E2"/>
+                                            <GradientStop Color="#FF5D5D5D" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Button.Background> Update all indexes
+                                </Button>
+                                <Button Grid.Row="1" Margin="5" x:Name="UpdateButton" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#00707070" OpacityMask="#CA000000" Focusable="False" Click="UpdateButton_Click">
+                                    <Button.Background>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="#FFE2E2E2"/>
+                                            <GradientStop Color="#FF5D5D5D" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Button.Background> Update
+                                </Button>
+                            </Grid>
                         </Grid>
 
                     </Grid>
@@ -110,6 +135,90 @@
                         <GradientStop Color="#FFE5E5E5" Offset="1"/>
                     </LinearGradientBrush>
                 </TabItem.Background>
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.8*"/>
+                        <RowDefinition Height="4.7*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.RowSpan="2" BorderThickness="0 0 1 0" BorderBrush="LightGray" Grid.Column="0"/>
+                    <TextBox x:Name="SearchBar_MyStock" Margin="6,8,8,8" Text="{Binding searchText_MyStock,UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" Foreground="White" BorderBrush="#00ABADB3">
+                        <TextBox.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#B28F8F8F"/>
+                                <GradientStop Color="#B25D5D5D" Offset="1"/>
+                            </LinearGradientBrush>
+                        </TextBox.Background>
+                    </TextBox>
+                    <ListBox x:Name="ListOfMyStocks" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding myStockIndexesList, Mode=OneWay,UpdateSourceTrigger=PropertyChanged }" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch" SelectionChanged="ListOfMyStocks_SelectionChanged" Background="#FF464646"  Margin="-3,0,0,-3" Foreground="White">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderThickness="0 0 0 1" BorderBrush="Gray">
+                                    <Grid Height="70">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="1*"/>
+                                            <RowDefinition Height="1*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="{Binding Path=symbol}" Grid.Row="0" Grid.Column="0" FontSize="14" FontFamily="Calibri" FontWeight="Bold" TextWrapping="WrapWithOverflow"/>
+                                        <TextBlock Text="{Binding Path=transactionVolume, StringFormat={}Your Volume : {0:0.0}}" Grid.Row="1" Grid.Column="0" FontSize="11" FontFamily="Calibri" TextWrapping="WrapWithOverflow"/>
+                                        <TextBlock Text="{Binding Path=profit, StringFormat={}Profit : {0:0.00}$}" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" FontSize="14" FontFamily="Calibri" TextWrapping="WrapWithOverflow" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Grid Grid.Column="1" Grid.RowSpan="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="3*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <lvc:CartesianChart x:Name="stepChart" DataTooltip="{x:Null}" Zoom="X" DisableAnimations="True" Hoverable="False" Margin="15,0,0,20">
+                            <lvc:CartesianChart.Series>
+                                <lvc:StepLineSeries x:Name="stepLineSeriesChart" AlternativeStroke="Transparent"/>
+                            </lvc:CartesianChart.Series>
+                            <lvc:CartesianChart.AxisX>
+                                <lvc:Axis Title="Date" LabelFormatter="{Binding XFormatter}"></lvc:Axis>
+                            </lvc:CartesianChart.AxisX>
+                            <lvc:CartesianChart.AxisY>
+                                <lvc:Axis Title="Price" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+                            </lvc:CartesianChart.AxisY>
+                        </lvc:CartesianChart>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" x:Name="CurrentPrice" FontFamily="Calibri" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Row="1" x:Name="MyPrice" FontFamily="Calibri" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Row="2" x:Name="MyProfit" FontFamily="Calibri" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <Button Grid.Column="1" Margin="5" x:Name="SellButton" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#00707070" OpacityMask="#CC000000" Focusable="False">
+                                <Button.Background>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="#FFE2E2E2" Offset="0.003"/>
+                                        <GradientStop Color="#FF5D5D5D" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                                Sell
+                            </Button>
+                        </Grid>
+
+                    </Grid>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>
