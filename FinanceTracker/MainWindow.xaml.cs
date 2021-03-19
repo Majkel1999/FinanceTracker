@@ -13,38 +13,98 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using LiveCharts.Wpf;
+using LiveCharts.Configurations;
+using LiveCharts;
 
 namespace FinanceTracker
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public List<StockIndex> stockIndexesList { get; set; }
+        private List<StockIndex> m_stockIndexesList;
+         
+        private DatabaseController dbController;
+
+        public Func<double,string> Formatter { get; set; }
+        public LineSeries lineSeries { get; set; }
+
+        public IEnumerable<StockIndex> stockIndexesList
+        {
+            get
+            {
+                if (searchText == null)
+                {
+                    return m_stockIndexesList;
+                }
+                return m_stockIndexesList.Where(x => x.symbol.ToUpper().StartsWith(searchText.ToUpper()));
+            }
+            set { m_stockIndexesList = (List<StockIndex>)value; }
+        }
+        private string m_searchText;
+        public string searchText
+        {
+            get { return m_searchText; }
+            set { m_searchText = value;
+                OnPropertyChanged("searchText");
+                OnPropertyChanged("stockIndexesList");
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
-            DatabaseController dbController = new DatabaseController();
-            if (dbController.IsEmptyDB())
+            dbController = new DatabaseController();
+            if (!dbController.stockIndexes.Any())
             {
-                dbController.FillDB();
+                dbController.FillStockIndexesTable();
             }
             stockIndexesList = dbController.stockIndexes.OrderBy(b => b.symbol).ToList();
+
             //ListOfStocks.ItemsSource = stockIndexesList;
             //ListOfStocks.DisplayMemberPath = "symbol";
+
+
+            var item = (StockIndex)ListOfStocks.SelectedItem;
+            
+            var ModelConfig = Mappers.Xy<HistoricalIndexData>()
+                .X(model => model.date.Ticks)
+                .Y(model => model.price);
+            Charting.For<HistoricalIndexData>(ModelConfig);
+
+            Formatter = value => new DateTime((long)value).ToString("dd-MM-yy");
             DataContext = this;
 
-            //dbController.Add(new StockIndex { })
-            
-            //StockPrice price = ApiRequest.GetData("AAPL");
-            //TextBlock.Text = price.Symbol + ":" + price.Price;
-            //List<HistoricalIndexData> list = ApiRequest.GetHistoricalData("AAPL");
 
-            //foreach (HistoricalIndexData stock in list)
-            //{
-            //    Trace.WriteLine(stock.symbol + ":" + stock.date + ":" + stock.price);
-            //}
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(name));
+        }
+
+        private void ListOfStocks_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = (StockIndex)ListOfStocks.SelectedItem;
+            if (item != null)
+            {
+
+                var historicalData = dbController.historicalIndexes.Where(x => x.symbol == item.symbol).Where(x => x.date > DateTime.Now.AddYears(-1)).OrderByDescending(x => x.date);
+                if (historicalData.Any())
+                {
+                    lineSeries = new LineSeries();
+                    lineSeries.Values = new ChartValues<HistoricalIndexData>();
+                    lineSeries.Values.AddRange(historicalData);
+                    lineSeriesChart.Values = lineSeries.Values;
+                }
+            }
         }
     }
 }

@@ -79,19 +79,16 @@ namespace FinanceTracker
             string result = response.Content.ReadAsStringAsync().Result;
             HistoricalDataList historicalData = JsonConvert.DeserializeObject<HistoricalDataList>(result);
             List<HistoricalIndexData> historicalIndexData = new List<HistoricalIndexData>();
-            uint i = 0;
             foreach (HistoricalData data in historicalData.historical)
             {
                 historicalIndexData.Add(new HistoricalIndexData
                 {
-                    ID=i,
                     symbol = historicalData.symbol,
                     price = data.high,
                     date = data.date,
                     changeOverTime = data.changeOverTime,
                     volume = data.volume
                 });
-                i++;
             }
             return historicalIndexData;
         }

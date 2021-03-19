@@ -23,55 +23,45 @@ namespace FinanceTracker
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite(@"Data Source=.\database.db").EnableSensitiveDataLogging();
 
-        public bool IsEmptyDB()
-        {
-            if ((!this.stockIndexes.Any()) && (!this.historicalIndexes.Any()) && (!this.myStocks.Any()))
-                return true;
-            return false;
-        }
-
-        public void FillDB()
+        public void FillStockIndexesTable()
         {
             List<StockIndex> stockIndexesList = ApiRequest.GetStockIndexes();
-            uint i = 0;
             foreach (StockIndex stock in stockIndexesList)
             {
-                List<HistoricalIndexData> historicalData = ApiRequest.GetHistoricalData(stock.symbol);
                 this.Add(stock);
-                foreach (HistoricalIndexData historicalIndexData in historicalData)
-                {
-                    historicalIndexData.ID = i;
-                    this.Add(historicalIndexData);
-                    ++i;
-                }
-                if (i > 1)
-                    break;
             }
             this.SaveChanges();
         }
 
-        //public bool IsOld()
-        //{
-        //    List<StockIndex> stockIndexes = ApiRequest.GetStockIndexes();
+        public void FillHistoricalTable(string stockIndex)
+        {
+            List<HistoricalIndexData> historicalData = ApiRequest.GetHistoricalData(stockIndex);
+            foreach (HistoricalIndexData data in historicalData)
+            {
+                this.Add(data);
+            }
+            this.SaveChanges();
+        }
 
-        //    return false;
-        //}
+        public void UpdateHistoricalTable(string stockIndex)
+        {
+            var lastIndex = historicalIndexes.Where(b => b.symbol == stockIndex).OrderBy(b => b.date).Last();
+            List<HistoricalIndexData> historicalData = ApiRequest.GetHistoricalData(stockIndex,lastIndex.date.AddDays(1));
+            foreach (HistoricalIndexData data in historicalData)
+            {
+                this.Add(data);
+            }
+            this.SaveChanges();
+        }
 
-        //public void UpdateDB()
-        //{
-        //    List<StockIndex> stockIndexes = ApiRequest.GetStockIndexes();
-
-        //    foreach (StockIndex stock in stockIndexes)
-        //    {
-        //        List<HistoricalIndexData> historicalData = ApiRequest.GetHistoricalData(stock.symbol);
-        //        this.Add(stock);
-        //        foreach (HistoricalIndexData historicalIndexData in historicalData)
-        //        {
-        //            this.Add(historicalIndexData);
-        //        }
-        //    }
-        //    this.SaveChanges();
-        //}
-
+        public void UpdateStockIndexesTable()
+        {
+            HistoricalIndexData lastIndex;
+            foreach (StockIndex stock in stockIndexes)
+            {
+                lastIndex = historicalIndexes.Where(b => b.symbol == stock.symbol).OrderBy(b => b.date).Last();
+                stock.price = lastIndex.price;
+            }
+        }
     }
 }

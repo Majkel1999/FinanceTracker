@@ -16,7 +16,7 @@ namespace FinanceTracker
     }
     public class HistoricalIndexData
     {
-        [Key] public uint ID { get; set; }
+        [Key] public int ID { get; set; }
         public string symbol { get; set; }
         public DateTime date { get; set; }
         public double price { get; set; }
@@ -26,7 +26,7 @@ namespace FinanceTracker
 
     public class MyStock
     {
-        [Key] public uint transactionID { get; set; }
+        [Key] public int transactionID { get; set; }
         public string symbol { get; set; }
         public DateTime transactionDate { get; set; }
         public double transactionVolume { get; set; }
