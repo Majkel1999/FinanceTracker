@@ -230,13 +230,15 @@ namespace FinanceTracker
 
         private void ListOfMyStocks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(ListOfMyStocks.SelectedIndex != -1)
+            if (ListOfMyStocks.SelectedIndex != -1)
             {
+                DatabaseController databaseController = new DatabaseController();
                 var item = (MyStock)ListOfMyStocks.SelectedItem;
-                var currentItem = dbController.stockIndexes.Where(x => x.symbol == item.symbol).FirstOrDefault();
+                var currentItem = databaseController.stockIndexes.Where(x => x.symbol == item.symbol).FirstOrDefault();
                 CurrentPrice.Text = "Current Price : " + currentItem.price.ToString("0.00");
                 MyPrice.Text = "Bought for : " + item.indexPrice.ToString("0.00");
-                MyProfit.Text = "Profit : " + ((item.indexPrice - currentItem.price) * item.transactionVolume).ToString("+0.00;-0.00;0");
+                MyProfit.Text = "Profit : " + ((currentItem.price - item.indexPrice) * item.transactionVolume).ToString("+0.00;-0.00;0");
+                databaseController.Dispose();
             }
         }
 
@@ -251,6 +253,7 @@ namespace FinanceTracker
                 Dispatcher.Invoke(() =>
                 {
                     OnPropertyChanged("stockIndexesList");
+                    OnPropertyChanged("myStockIndexesList");
                 });
             }).Start();
         }
