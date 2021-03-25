@@ -25,7 +25,7 @@ namespace FinanceTracker
 
         public void FillStockIndexesTable()
         {
-            List<StockIndex> stockIndexesList = ApiRequest.GetStockIndexes();
+            List<StockIndex> stockIndexesList = FinancialData.GetAllStockIndexes().Result;
             foreach (StockIndex stock in stockIndexesList)
             {
                 this.Add(stock);
@@ -35,7 +35,7 @@ namespace FinanceTracker
 
         public void FillHistoricalTable(string stockIndex)
         {
-            List<HistoricalIndexData> historicalData = ApiRequest.GetHistoricalData(stockIndex);
+            List<HistoricalIndexData> historicalData = FinancialData.GetHistoricalIndexData(stockIndex).Result;
             foreach (HistoricalIndexData data in historicalData)
             {
                 this.Add(data);
@@ -56,7 +56,7 @@ namespace FinanceTracker
                 date = DateTime.Today.AddYears(-1);
             }
 
-            List<HistoricalIndexData> historicalData = ApiRequest.GetHistoricalData(stockIndex, date);
+            List<HistoricalIndexData> historicalData = FinancialData.GetHistoricalIndexData(stockIndex, date).Result;
             foreach (HistoricalIndexData data in historicalData)
             {
                 this.Add(data);
@@ -68,7 +68,7 @@ namespace FinanceTracker
 
         public void UpdateStockIndexesTable()
         {
-            List<StockIndex> stockIndexesList = ApiRequest.GetStockIndexes();
+            List<StockIndex> stockIndexesList = FinancialData.GetAllStockIndexes().Result;
             foreach (StockIndex stock in stockIndexesList)
             {
                 var index = stockIndexes.Where(x => x.symbol == stock.symbol).FirstOrDefault();
