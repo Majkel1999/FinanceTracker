@@ -218,14 +218,25 @@ namespace FinanceTracker
 
         private void ListOfMyStocks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            DatabaseController databaseController = new DatabaseController();
             if (ListOfMyStocks.SelectedIndex != -1)
             {
-                DatabaseController databaseController = new DatabaseController();
                 var item = (MyStock)ListOfMyStocks.SelectedItem;
                 var currentItem = databaseController.stockIndexes.Where(x => x.symbol == item.symbol).FirstOrDefault();
-                CurrentPrice.Text = "Current Price : " + currentItem.price.ToString("0.00");
-                MyPrice.Text = "Bought for : " + item.indexPrice.ToString("0.00");
-                MyProfit.Text = "Profit : " + ((currentItem.price - item.indexPrice) * item.transactionVolume).ToString("+0.00;-0.00;0");
+                CurrentPrice.Text = currentItem.price.ToString("0.00");
+                MyPrice.Text = item.indexPrice.ToString("0.00");
+                MyProfit.Text = item.profit.ToString("+0.00;-0.00;0");
+            }
+        }
+
+        private void UpdateMyStockDetailData()
+        {
+            DatabaseController databaseController = new DatabaseController();
+            foreach (MyStock stock in databaseController.myStocks)
+            {
+                var currentItem = databaseController.stockIndexes.Where(x => x.symbol == stock.symbol).FirstOrDefault();
+                stock.profit = ((currentItem.price - stock.indexPrice) * stock.transactionVolume);
+                databaseController.SaveChanges();
             }
         }
 
@@ -238,6 +249,7 @@ namespace FinanceTracker
                 stockIndexesList = databaseController.stockIndexes.OrderBy(b => b.symbol).ToList();
                 Dispatcher.Invoke(() =>
                 {
+                    UpdateMyStockDetailData();
                     OnPropertyChanged("stockIndexesList");
                     OnPropertyChanged("myStockIndexesList");
                 });

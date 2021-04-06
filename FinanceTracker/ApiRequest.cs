@@ -67,7 +67,7 @@ namespace FinanceTracker
                 return @"[ {
                         ""symbol"" : ""AAPL"",
                         ""name"" : ""Apple Inc."",
-                        ""price"" : 120.58,
+                        ""price"" : 0.58,
                         ""exchange"" : ""Nasdaq Global Select""},
                         {
                         ""symbol"" : ""CMCSA"",

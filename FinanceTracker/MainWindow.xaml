@@ -88,8 +88,15 @@
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Center" >Quantity</TextBlock>
-                                <TextBox x:Name="QuantityTextBox" Text="{Binding buyQuantity,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="10 0 10 20" Grid.Row="1" TextChanged="QuantityTextBox_TextChanged"/>
+                                <TextBlock Grid.Row="0" FontFamily="Calibri" FontSize="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="LightGray" Margin="10" >Quantity:</TextBlock>
+                                <TextBox x:Name="QuantityTextBox" Text="{Binding buyQuantity,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="10 0 10 20" Grid.Row="1" TextChanged="QuantityTextBox_TextChanged" BorderThickness="0">
+                                    <TextBox.Background>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="#FFE2E2E2"/>
+                                            <GradientStop Color="#FF515151" Offset="1.3"/>
+                                        </LinearGradientBrush>
+                                    </TextBox.Background>
+                                </TextBox>
                                 <TextBlock Grid.Row="2" FontFamily="Calibri" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Path=buyPrice,UpdateSourceTrigger=PropertyChanged, StringFormat={}Price:{0:0.00}}" />
                             </Grid>
                             <Button x:Name="BuyButton" Grid.Column="1" Margin="5" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#00707070" OpacityMask="#CC000000" Focusable="False" Click="BuyButton_Click">
@@ -128,7 +135,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="My Stock" FontFamily="Nirmala UI" FontSize="14" FontWeight="Bold" UseLayoutRounding="False" BorderBrush="#FF2C2C2C">
+            <TabItem Header="My Stock" FontFamily="Nirmala UI" FontSize="14" FontWeight="Bold" UseLayoutRounding="False" BorderBrush="#FF2C2C2C" Height="23" VerticalAlignment="Bottom">
                 <TabItem.Background>
                     <LinearGradientBrush EndPoint="0,1">
                         <GradientStop Color="#FF838383"/>
@@ -141,11 +148,12 @@
                         <RowDefinition Height="4.7*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.5*"/>
-                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="7*"/>
+                        <ColumnDefinition Width="418*"/>
+                        <ColumnDefinition Width="849*"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.RowSpan="2" BorderThickness="0 0 1 0" BorderBrush="LightGray" Grid.Column="0"/>
-                    <TextBox x:Name="SearchBar_MyStock" Margin="6,8,8,8" Text="{Binding searchText_MyStock,UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" Foreground="White" BorderBrush="#00ABADB3">
+                    <Border Grid.RowSpan="2" BorderThickness="0 0 1 0" BorderBrush="LightGray" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,849,0"/>
+                    <TextBox x:Name="SearchBar_MyStock" Margin="6,8,8,8" Text="{Binding searchText_MyStock,UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" Foreground="White" BorderBrush="#00ABADB3" Grid.ColumnSpan="2">
                         <TextBox.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="#B28F8F8F"/>
@@ -153,7 +161,7 @@
                             </LinearGradientBrush>
                         </TextBox.Background>
                     </TextBox>
-                    <ListBox x:Name="ListOfMyStocks" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding myStockIndexesList, Mode=OneWay,UpdateSourceTrigger=PropertyChanged }" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch" SelectionChanged="ListOfMyStocks_SelectionChanged" Background="#FF464646"  Margin="-3,0,0,-3" Foreground="White">
+                    <ListBox x:Name="ListOfMyStocks" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding myStockIndexesList, Mode=OneWay,UpdateSourceTrigger=PropertyChanged }" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch" SelectionChanged="ListOfMyStocks_SelectionChanged" Background="#FF464646"  Margin="-3,0,849,-3" Foreground="White" Grid.ColumnSpan="3">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderThickness="0 0 0 1" BorderBrush="Gray">
@@ -174,7 +182,7 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Grid Grid.Column="1" Grid.RowSpan="2">
+                    <Grid Grid.Column="2" Grid.RowSpan="2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="3*"/>
                             <RowDefinition Height="1*"/>
@@ -194,27 +202,42 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="0.5*"/>
                             </Grid.ColumnDefinitions>
                             <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" x:Name="CurrentPrice" FontFamily="Calibri" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Row="1" x:Name="MyPrice" FontFamily="Calibri" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Row="2" x:Name="MyProfit" FontFamily="Calibri" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Border Grid.Column="0" Grid.RowSpan="3" BorderThickness="0 0 2 0" Margin="2" BorderBrush="White"/>
+                                <Label Content="Current Price:" FontFamily="Calibri" FontSize="16" Foreground="LightGray" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10"/>
+                                <Label Grid.Row="1" Content="Bought For:" FontFamily="Calibri" FontSize="16" Foreground="LightGray" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10"/>
+                                <Label Grid.Row="2" Content="Your Profit:"  FontFamily="Calibri" FontSize="16" Foreground="LightGray" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10"/>
+                                <TextBlock Grid.Column="1" Grid.Row="0" Margin="10" x:Name="CurrentPrice" FontFamily="Calibri" FontSize="16" Foreground="LightGray" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Grid.Row="1" Margin="10" x:Name="MyPrice" FontFamily="Calibri" FontSize="16" Foreground="LightGray" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <TextBlock  Grid.Column="1" Grid.Row="2"  Margin="10" x:Name="MyProfit" FontFamily="Calibri" FontSize="16" Foreground="LightGray" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             </Grid>
-                            <Button Grid.Column="1" Margin="5" x:Name="SellButton" VerticalAlignment="Bottom" Foreground="White" BorderBrush="#00707070" OpacityMask="#CC000000" Focusable="False">
-                                <Button.Background>
-                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                        <GradientStop Color="#FFE2E2E2" Offset="0.003"/>
-                                        <GradientStop Color="#FF5D5D5D" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Button.Background>
-                                Sell
-                            </Button>
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="1.5*"/>
+                                </Grid.RowDefinitions>
+                                <Button Grid.Row="2" Margin="5" x:Name="SellButton" Foreground="White" BorderBrush="#00707070" OpacityMask="#CC000000" Focusable="False">
+                                    <Button.Background>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="#FFE2E2E2" Offset="0.003"/>
+                                            <GradientStop Color="#FF5D5D5D" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Button.Background>
+                                    Sell
+                                </Button>
+                            </Grid>
                         </Grid>
 
                     </Grid>
