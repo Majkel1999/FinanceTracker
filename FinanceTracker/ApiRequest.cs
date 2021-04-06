@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 */
 /* Api Key financialModelingPrep
  * b9d32703beec60431f239bcfae715d7f
+ * 0959a6645818c0ead96715ab44135e89
  */
 namespace FinanceTracker
 {
@@ -21,11 +22,10 @@ namespace FinanceTracker
     public static class ApiRequest
     {
         /// <summary>
-        /// Debug mode do testowania funkcjonalności - pozwala na zwracanie wartości 
-        /// bez odwoływania się do API. Domyslnie zwraca dane dla AAPL
+        /// Debug mode for testing the class.
+        /// Default data returned is for AAPL.
         /// </summary>
         public static bool Debug = false;
-
         private const string APIKey = "0959a6645818c0ead96715ab44135e89";
         private static HttpClient m_client = new HttpClient();
         /// <summary>

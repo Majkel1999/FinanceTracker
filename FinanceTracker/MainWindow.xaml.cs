@@ -1,21 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Windows;
-using System.Diagnostics;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using LiveCharts.Wpf;
 using LiveCharts.Configurations;
 using LiveCharts;
@@ -135,7 +124,6 @@ namespace FinanceTracker
                 {
                     DatabaseController databaseController = new DatabaseController();
                     databaseController.UpdateHistoricalTable(item.symbol);
-                    databaseController.Dispose();
                 }
                 Dispatcher.Invoke(() =>
                 {
@@ -238,7 +226,6 @@ namespace FinanceTracker
                 CurrentPrice.Text = "Current Price : " + currentItem.price.ToString("0.00");
                 MyPrice.Text = "Bought for : " + item.indexPrice.ToString("0.00");
                 MyProfit.Text = "Profit : " + ((currentItem.price - item.indexPrice) * item.transactionVolume).ToString("+0.00;-0.00;0");
-                databaseController.Dispose();
             }
         }
 
@@ -249,7 +236,6 @@ namespace FinanceTracker
                 DatabaseController databaseController = new DatabaseController();
                 databaseController.UpdateStockIndexesTable();
                 stockIndexesList = databaseController.stockIndexes.OrderBy(b => b.symbol).ToList();
-                databaseController.Dispose();
                 Dispatcher.Invoke(() =>
                 {
                     OnPropertyChanged("stockIndexesList");
