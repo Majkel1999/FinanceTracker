@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Newtonsoft.Json;
+using System.Diagnostics;
 /* Api Key AlphaVantage
 * 8PXA60GU992EV4KA 
 */
@@ -16,32 +14,32 @@ using Newtonsoft.Json;
 namespace FinanceTracker
 {
     /// <summary>
-    /// Static class responsible for obtaining data from the server by public API.
-    /// APIKey can be obtained at https://financialmodelingprep.com/
+    /// Klasa statyczna odpowiedzialna za obsługę komunikacji z API.
+    /// Klucz APIKey można dostać na  https://financialmodelingprep.com/
     /// </summary>
     public static class ApiRequest
     {
         /// <summary>
-        /// Debug mode for testing the class.
-        /// Default data returned is for AAPL.
+        /// Zmienna używana do testowania klasy.
+        /// W trybie testowym zwraca dane dla AAPL.
         /// </summary>
         public static bool Debug = false;
+        /// <summary>
+        /// Klucz api potrzebny do zapytan do serwera.
+        /// </summary>
         private const string APIKey = "0959a6645818c0ead96715ab44135e89";
         private static HttpClient m_client = new HttpClient();
-        /// <summary>
-        /// Creates static class with the base URL of the default website.
-        /// Prepare for accepting JSON
-        /// </summary>
+
         static ApiRequest()
         {
             m_client.BaseAddress = new Uri("https://financialmodelingprep.com/");
             m_client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
         /// <summary>
-        /// Gets StockPrice from the server for the given index
+        /// Metoda zwraca otrzymany string z aktualna cena danego symbolu.
         /// </summary>
-        /// <param name="stockIndex">Index symbol for which to get data for</param>
-        /// <returns>Data obtained from the server</returns>
+        /// <param name="stockIndex">Symbol dla ktorego chcemy otrzymac cene</param>
+        /// <returns>Zawartosc wiadomosci z serwera</returns>
         public async static Task<string> GetStockPrice(string stockIndex)
         {
             if (Debug)
@@ -55,11 +53,9 @@ namespace FinanceTracker
             return await responseTask.Result.Content.ReadAsStringAsync();
         }
         /// <summary>
-        /// Gets a list of all stock indexes avalible on the market. Removes all the indexes
-        /// for which the exchange is not primary by filtering symbols for '.', price is 0 or 
-        /// name is null or empty.
+        /// Pobiera pelna liste wszystkich dostepnych symboli na gieldzie.
         /// </summary>
-        /// <returns>List of all stock indexes with full data</returns>
+        /// <returns>Lista wszystkich dostepnych symboli na gieldzie</returns>
         public async static Task<string> GetStockIndexes()
         {
             if (Debug)
@@ -98,10 +94,10 @@ namespace FinanceTracker
 
         }
         /// <summary>
-        /// Gets a list of all historical price data for a given index.
+        /// Metoda pobierajaca pelne dane historyczne dla danego symbolu z zewnetrznego API.
         /// </summary>
-        /// <param name="stockIndex">Index symbol for which to get data for</param>
-        /// <returns>List of all historical prices</returns>
+        /// <param name="stockIndex">Symbol dla ktorego pobrac dane</param>
+        /// <returns>Pelna lista danych historycznych</returns>
         public async static Task<string> GetHistoricalData(string stockIndex)
         {
             if (Debug)
@@ -171,15 +167,17 @@ namespace FinanceTracker
             query["apikey"] = APIKey;
             var responseTask = m_client.GetAsync("/api/v3/historical-price-full/" + stockIndex + "?" + query.ToString());
             await responseTask;
+            Trace.WriteLine("Response:" + responseTask.Result.StatusCode);
             return await responseTask.Result.Content.ReadAsStringAsync();
 
         }
         /// <summary>
-        /// /// Gets a list of historical price data for a given index from the given start date.
+        /// Metoda pobierajaca dane historyczne dla danego symbolu z zewnetrznego API,
+        /// rozpoczynajac od zadanej daty.
         /// </summary>
-        /// <param name="stockIndex">Index symbol for which to get data for</param>
-        /// <param name="startDate">Date from which to get data from</param>
-        /// <returns>List of historical prices</returns>
+        /// <param name="stockIndex">Symbol dla ktorego pobrac dane</param>
+        /// <param name="startDate">Data od ktorej rozpoczac dane</param>
+        /// <returns>Lista danych historycznych</returns>
         public async static Task<string> GetHistoricalData(string stockIndex, DateTime startDate)
         {
             if (Debug)
@@ -251,6 +249,7 @@ namespace FinanceTracker
             query["apikey"] = APIKey;
             var responseTask = m_client.GetAsync("/api/v3/historical-price-full/" + stockIndex + "?" + query.ToString());
             await responseTask;
+            Trace.WriteLine("Response:" + responseTask.Result.StatusCode);
             return await responseTask.Result.Content.ReadAsStringAsync();
         }
     }

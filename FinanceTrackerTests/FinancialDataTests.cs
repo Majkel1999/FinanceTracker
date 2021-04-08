@@ -15,14 +15,20 @@ namespace FinanceTracker.Tests
             ApiRequest.Debug = false;
         }
         [Test()]
-        public void GetAllStockIndexes_StringDeserializeTest()
+        public void GetAllStockIndexes_SymbolDeserializeTest()
         {
             ApiRequest.Debug = true;
             var list = FinancialData.GetAllStockIndexes().Result;
             Assert.AreEqual("AAPL", list[0].symbol);
+            ApiRequest.Debug = false;
+        }  
+        
+        [Test()]
+        public void GetAllStockIndexes_NameDeserializeTest()
+        {
+            ApiRequest.Debug = true;
+            var list = FinancialData.GetAllStockIndexes().Result;
             Assert.AreEqual("Apple Inc.", list[0].name);
-            Assert.AreEqual("CMCSA", list[1].symbol);
-            Assert.AreEqual("Comcast Corp", list[1].name);
             ApiRequest.Debug = false;
         }
         [Test()]
@@ -31,7 +37,6 @@ namespace FinanceTracker.Tests
             ApiRequest.Debug = true;
             var list = FinancialData.GetAllStockIndexes().Result;
             Assert.AreNotEqual(0, list[0].price);
-            Assert.AreNotEqual(0, list[1].price);
             ApiRequest.Debug = false;
         }
 
@@ -44,31 +49,36 @@ namespace FinanceTracker.Tests
             ApiRequest.Debug = false;
         }
         [Test()]
-        public void GetStockIndexPrice_DeserializeTest()
+        public void GetStockIndexPrice_SymbolDeserializeTest()
         {
             ApiRequest.Debug = true;
             var stock = FinancialData.GetStockIndexPrice("AAPL").Result;
             Assert.AreEqual("AAPL",stock[0].symbol );
+            ApiRequest.Debug = false;
+        }
+        [Test()]
+        public void GetStockIndexPrice_PriceDeserializeTest()
+        {
+            ApiRequest.Debug = true;
+            var stock = FinancialData.GetStockIndexPrice("AAPL").Result;
             Assert.AreEqual(120.58,stock[0].price);
             ApiRequest.Debug = false;
         }
 
         [Test()]
-        public void GetHistoricalIndexDataTest()
+        public void GetHistoricalIndexDataTest_PriceDeserializeTest()
         {
             ApiRequest.Debug = true;
             var stock = FinancialData.GetHistoricalIndexData("AAPL").Result;
             Assert.AreEqual(4,stock.Count);
-            Assert.AreEqual("AAPL",stock[0].symbol);
             ApiRequest.Debug = false;
         }
 
         [Test()]
-        public void GetHistoricalIndexDataTest1()
+        public void GetHistoricalIndexDataTest_SymbolDeserializeTest()
         {
             ApiRequest.Debug = true;
-            var stock = FinancialData.GetHistoricalIndexData("AAPL", System.DateTime.Now).Result;
-            Assert.AreEqual(4,stock.Count);
+            var stock = FinancialData.GetHistoricalIndexData("AAPL").Result;
             Assert.AreEqual("AAPL",stock[0].symbol);
             ApiRequest.Debug = false;
         }
