@@ -59,4 +59,13 @@ namespace FinanceTracker
 
     }
 
+    public class MyStockProfit
+    {
+        [Key] public int ID { get; set; }
+        public int transactionID { get; set; }
+        public string symbol { get; set; }
+        public DateTime date { get; set; }
+        public double profit { get; set; }
+    }
+
 }

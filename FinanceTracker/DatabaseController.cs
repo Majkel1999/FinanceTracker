@@ -30,6 +30,8 @@ namespace FinanceTracker
         /// </summary>
         public DbSet<MyStock> myStocks { get; set; }
 
+        public DbSet<MyStockProfit> myStockProfits { get; set; }
+
         /// <summary>
         /// Konstruktor klasy 
         /// </summary>
@@ -125,7 +127,6 @@ namespace FinanceTracker
         /// </summary>
         public void UpdateStockIndexesTable()
         {
-
             List<StockIndex> stockIndexesList = FinancialData.GetAllStockIndexes().Result;
             foreach (StockIndex stock in stockIndexesList)
             {
