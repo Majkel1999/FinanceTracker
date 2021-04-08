@@ -65,7 +65,7 @@
                             <RowDefinition Height="3*"/>
                             <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
-                        <lvc:CartesianChart x:Name="lineChart" DataTooltip="{x:Null}" Zoom="X" DisableAnimations="True" Hoverable="False" Margin="15,0,0,20">
+                        <lvc:CartesianChart x:Name="lineChart" DataTooltip="{x:Null}" Zoom="X" DisableAnimations="True" Hoverable="False" Margin="15,20,20,20">
                             <lvc:CartesianChart.Series>
                                 <lvc:LineSeries x:Name="lineSeriesChart"/>
                             </lvc:CartesianChart.Series>
@@ -76,6 +76,8 @@
                                 <lvc:Axis Title="Price" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
                             </lvc:CartesianChart.AxisY>
                         </lvc:CartesianChart>
+                        <Border x:Name="noDataBorder" Margin="16 16 16 22" BorderThickness="1" BorderBrush="LightGray" Visibility="Hidden"/>
+                        <Label x:Name="noDataLabel" Content="No data available in Database. &#x0a;Please click Update button down below." VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" FontFamily="Calibri" HorizontalContentAlignment="Center" Foreground="LightGray" Visibility="Hidden"/>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>

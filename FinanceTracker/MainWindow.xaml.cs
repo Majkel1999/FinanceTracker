@@ -100,6 +100,8 @@ namespace FinanceTracker
             YFormatter = value => value.ToString("0.00$");
             lineChart.Visibility = Visibility.Hidden;
             DataContext = this;
+            ListOfStocks.SelectedIndex = 0;
+            ListOfMyStocks.SelectedIndex = 0;
         }
 
         void OnPropertyChanged(string name)
