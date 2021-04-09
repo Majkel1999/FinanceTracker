@@ -59,6 +59,14 @@ namespace FinanceTracker
 
     }
 
+    /// <summary>
+    /// Klasa przechowująca informacje o zarobkach w czasie
+    /// Id - klucz główny wpisu
+    /// transactionID - identyfikator zakupu
+    /// symbol - skrót nazwy firmy
+    /// date - data stanu zarobku
+    /// profit - zarobek w danym dniu
+    /// </summary>
     public class MyStockProfit
     {
         [Key] public int ID { get; set; }

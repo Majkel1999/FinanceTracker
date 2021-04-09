@@ -131,8 +131,7 @@ namespace FinanceTracker
             UpdateMyStockDetailData();
             Dispatcher.Invoke(() =>
             {
-                lineChart.Visibility = Visibility.Hidden;
-                ListOfStocks.SelectedIndex = 0;
+                ListOfRealStocks.SelectedIndex = 0;
                 if (m_myStockIndexesList.Count > 0)
                 {
                     ListOfMyStocks.SelectedIndex = 0;
@@ -159,7 +158,7 @@ namespace FinanceTracker
         private void UpdateHistoricalIndexGraph()
         {
             DatabaseController dbController = new DatabaseController();
-            var item = (StockIndex)ListOfStocks.SelectedItem;
+            var item = (StockIndex)ListOfRealStocks.SelectedItem;
             if (item != null)
             {
                 var historicalData = dbController.historicalIndexes.Where(x => x.symbol == item.symbol).Where(x => x.date > DateTime.Now.AddYears(-1)).OrderByDescending(x => x.date);
@@ -198,13 +197,25 @@ namespace FinanceTracker
                 LineSeries stepLineSeries = new LineSeries();
                 stepLineSeries.Values = new ChartValues<MyStockProfit>();
                 stepLineSeries.Values.AddRange(databaseController.myStockProfits.Where(x => x.transactionID == myStock.transactionID));
-                ProfitLineSeriesChart.Values = stepLineSeries.Values;
+                ProfitChartSeries.Values = stepLineSeries.Values;
             });
         }
 
         private void UpdateMyStockProfit(MyStock myStock)
         {
             DatabaseController databaseController = new DatabaseController();
+            DateTime newestProfit;
+            if (databaseController.myStockProfits.Where(x => x.transactionID == myStock.transactionID).Any())
+            {
+                newestProfit = databaseController.myStockProfits
+                    .Where(x => x.symbol == myStock.symbol)
+                    .OrderByDescending(x => x.date)
+                    .FirstOrDefault().date;
+            }
+            else
+            {
+                newestProfit = myStock.transactionDate;
+            }
 
             bool NeedToUpdateHistorical = !databaseController.historicalIndexes
                 .Where(x => x.symbol == myStock.symbol)
@@ -216,9 +227,11 @@ namespace FinanceTracker
                 databaseController.FillHistoricalTable(myStock.symbol);
             }
 
+
+
             var list = databaseController.historicalIndexes
                 .Where(x => x.symbol == myStock.symbol)
-                .Where(x => x.date > myStock.transactionDate)
+                .Where(x => x.date > newestProfit)
                 .OrderByDescending(x => x.date)
                 .ToList();
 
@@ -240,19 +253,19 @@ namespace FinanceTracker
             lineSeries = new LineSeries();
             lineSeries.Values = new ChartValues<HistoricalIndexData>();
             lineSeries.Values.AddRange(historicalData);
-            lineSeriesChart.Values = lineSeries.Values;
+            RealStockChartSeries.Values = lineSeries.Values;
         }
 
         private void ShowStockGraph()
         {
-            lineChart.Visibility = Visibility.Visible;
+            RealStockChart.Visibility = Visibility.Visible;
             noDataLabel.Visibility = Visibility.Hidden;
             noDataBorder.Visibility = Visibility.Hidden;
         }
 
         private void HideStockGraph()
         {
-            lineChart.Visibility = Visibility.Hidden;
+            RealStockChart.Visibility = Visibility.Hidden;
             noDataLabel.Visibility = Visibility.Visible;
             noDataBorder.Visibility = Visibility.Visible;
         }
@@ -327,7 +340,7 @@ namespace FinanceTracker
         {
             UpdateHistoricalIndexGraph();
             buyQuantity = string.Empty;
-            QuantityTextBox.Text = "0";
+            BuyQuantityTextBox.Text = "0";
         }
 
         private void ListOfMyStocks_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -340,14 +353,14 @@ namespace FinanceTracker
 
             if (!Regex.IsMatch(input, @"^[1-9][0-9]*$")) //only numbers not starting with 0
             {
-                QuantityTextBox.Text = string.Empty; //wywala binding error ale apka działa idealnie? 
+                BuyQuantityTextBox.Text = string.Empty; //wywala binding error ale apka działa idealnie? 
                 buyPrice = 0;
                 OnPropertyChanged("buyPrice");
                 OnPropertyChanged("buyQuantity");
             }
             else
             {
-                var item = (StockIndex)ListOfStocks.SelectedItem;
+                var item = (StockIndex)ListOfRealStocks.SelectedItem;
                 if (item != null)
                 {
                     buyPrice = item.price * ulong.Parse(buyQuantity);
@@ -368,7 +381,7 @@ namespace FinanceTracker
 
         private void BuyButton_Click(object sender, RoutedEventArgs e)
         {
-            var item = (StockIndex)ListOfStocks.SelectedItem;
+            var item = (StockIndex)ListOfRealStocks.SelectedItem;
             if (item != null)
             {
                 ulong quantity;
@@ -425,7 +438,7 @@ namespace FinanceTracker
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
             UpdateButton.IsEnabled = false;
-            var item = (StockIndex)ListOfStocks.SelectedItem;
+            var item = (StockIndex)ListOfRealStocks.SelectedItem;
             Thread thread = new Thread(() =>
             {
                 if (item != null)
@@ -435,7 +448,7 @@ namespace FinanceTracker
                 }
                 Dispatcher.Invoke(() =>
                 {
-                    if (item == (StockIndex)ListOfStocks.SelectedItem)
+                    if (item == (StockIndex)ListOfRealStocks.SelectedItem)
                         UpdateHistoricalIndexGraph();
                     UpdateButton.IsEnabled = true;
                 });
