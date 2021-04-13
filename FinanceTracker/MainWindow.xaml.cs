@@ -10,6 +10,7 @@ using LiveCharts.Configurations;
 using LiveCharts;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
+using System.Diagnostics;
 
 namespace FinanceTracker
 {
@@ -505,6 +506,16 @@ namespace FinanceTracker
                     OnPropertyChanged("myStockIndexesList");
                 });
             }).Start();
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            var startInfo = new ProcessStartInfo(e.Uri.AbsoluteUri)
+            {
+                UseShellExecute = true,
+            };
+            Process.Start(startInfo);
+            e.Handled = true;
         }
     }
 }
