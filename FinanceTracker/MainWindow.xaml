@@ -31,7 +31,7 @@
                         <ColumnDefinition Width="3*"/>
                     </Grid.ColumnDefinitions>
                     <Border Grid.RowSpan="2" BorderThickness="0 0 1 0" BorderBrush="LightGray" Grid.Column="0"/>
-                    <TextBox x:Name="RealStockSearchBar" Margin="6,8,8,8" Text="{Binding searchText,UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}" Foreground="White" BorderBrush="#00ABADB3">
+                    <TextBox x:Name="RealStockSearchBar" Margin="6,8,8,8" Text="{Binding searchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Foreground="White" BorderBrush="#00ABADB3">
                         <TextBox.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="#B28F8F8F"/>
@@ -91,7 +91,7 @@
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" FontFamily="Calibri" FontSize="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="LightGray" Margin="10" >Quantity:</TextBlock>
-                                <TextBox x:Name="BuyQuantityTextBox" Text="{Binding buyQuantity,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="10 0 10 20" Grid.Row="1" TextChanged="QuantityTextBox_TextChanged" BorderThickness="0">
+                                <TextBox x:Name="BuyQuantityTextBox" Margin="10 0 10 20" Grid.Row="1" TextChanged="QuantityTextBox_TextChanged" BorderThickness="0">
                                     <TextBox.Background>
                                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                             <GradientStop Color="#FFE2E2E2"/>

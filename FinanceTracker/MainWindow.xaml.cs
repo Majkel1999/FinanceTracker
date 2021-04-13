@@ -13,9 +13,6 @@ using System.Windows.Media;
 
 namespace FinanceTracker
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public Func<double, string> YFormatter { get; set; }
@@ -23,7 +20,6 @@ namespace FinanceTracker
         public LineSeries lineSeries { get; set; }
 
         public double buyPrice { get; set; }
-        public string buyQuantity { get; set; }
 
         private List<StockIndex> m_stockIndexesList;
         public IEnumerable<StockIndex> stockIndexesList
@@ -79,7 +75,16 @@ namespace FinanceTracker
                 OnPropertyChanged("myStockIndexesList");
             }
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
 
         public MainWindow()
         {
@@ -92,6 +97,11 @@ namespace FinanceTracker
             }).Start();
         }
 
+        /// <summary>
+        /// Metoda przygotowuje baze danych do pracy
+        /// W razie potrzeby pobiera z serwera informacje o dostepnych indeksach
+        /// oraz aktualizuje informacje historyczne dla pierwszego indeksu
+        /// </summary>
         private void DatabaseSetup()
         {
             DatabaseController dbController = new DatabaseController();
@@ -99,8 +109,8 @@ namespace FinanceTracker
             {
                 dbController.FillStockIndexesTable();
             }
-            stockIndexesList = dbController.stockIndexes.OrderBy(b => b.symbol).ToList();
 
+            stockIndexesList = dbController.stockIndexes.OrderBy(b => b.symbol).ToList();
             if (!dbController.historicalIndexes.Where(x => x.symbol == stockIndexesList.First().symbol).Any())
             {
                 dbController.FillHistoricalTable(stockIndexesList.First().symbol);
@@ -108,6 +118,10 @@ namespace FinanceTracker
             myStockIndexesList = dbController.myStocks.OrderBy(x => x.symbol).ToList();
         }
 
+        /// <summary>
+        /// Konfiguracja maperow dla wykresow
+        /// Konfiguracja formaterow opisow 
+        /// </summary>
         private void ChartSetup()
         {
             var HistoricalPriceMapper = Mappers.Xy<HistoricalIndexData>()
@@ -126,6 +140,9 @@ namespace FinanceTracker
             YFormatter = value => value.ToString("0.00$");
         }
 
+        /// <summary>
+        /// Wstepna konfiguracja widoku.
+        /// </summary>
         private void InitialSetup()
         {
             UpdateMyStockDetailData();
@@ -144,6 +161,10 @@ namespace FinanceTracker
             });
         }
 
+        /// <summary>
+        /// Metoda odswieza informacje o aktualnych zarobkach we 
+        /// wszystkich zakupionych indeksach
+        /// </summary>
         private void UpdateMyStockDetailData()
         {
             DatabaseController databaseController = new DatabaseController();
@@ -155,6 +176,9 @@ namespace FinanceTracker
             }
         }
 
+        /// <summary>
+        /// Metoda odswieza wykres danych historycznych dla aktualnie wybranego indeksu
+        /// </summary>
         private void UpdateHistoricalIndexGraph()
         {
             DatabaseController dbController = new DatabaseController();
@@ -178,6 +202,10 @@ namespace FinanceTracker
             }
         }
 
+        /// <summary>
+        /// Metoda odswieza oraz tworzy wykres zarobkow w czasie
+        /// </summary>
+        /// <param name="myStock">transkacja dla ktorej stworzyc wykres</param>
         private void UpdateMyStockProfitGraph(MyStock myStock)
         {
             DatabaseController databaseController = new DatabaseController();
@@ -201,6 +229,10 @@ namespace FinanceTracker
             });
         }
 
+        /// <summary>
+        /// Metoda odswieza dane o historycznych zarobkach zakupionych indeksow
+        /// </summary>
+        /// <param name="myStock">transakcja dla ktorej odswiezyc dane</param>
         private void UpdateMyStockProfit(MyStock myStock)
         {
             DatabaseController databaseController = new DatabaseController();
@@ -226,8 +258,6 @@ namespace FinanceTracker
             {
                 databaseController.FillHistoricalTable(myStock.symbol);
             }
-
-
 
             var list = databaseController.historicalIndexes
                 .Where(x => x.symbol == myStock.symbol)
@@ -270,6 +300,10 @@ namespace FinanceTracker
             noDataBorder.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Metoda dodaje nowy zakupiony indeks do bazy danych
+        /// </summary>
+        /// <param name="myStock">Indeks do dodania</param>
         private void AddNewBoughtStock(MyStock myStock)
         {
             DatabaseController dbController = new DatabaseController();
@@ -281,6 +315,12 @@ namespace FinanceTracker
             OnPropertyChanged("myStockIndexesList");
         }
 
+        /// <summary>
+        /// Metoda usuwa zakupiony indeks z bazy danych
+        /// i odswieza widok w razie potrzeby
+        /// </summary>
+        /// <param name="myStock">Transakcja do odswiezenia</param>
+        /// <param name="quantity">Ilosc sprzedanych akcji</param>
         private void RemoveSoldStock(MyStock myStock, int quantity)
         {
             DatabaseController dbController = new DatabaseController();
@@ -312,6 +352,9 @@ namespace FinanceTracker
             UpdateSelectedMyStock();
         }
 
+        /// <summary>
+        /// Metoda odswieza widok w zakladce zakupionych indeksow
+        /// </summary>
         private void UpdateSelectedMyStock()
         {
             DatabaseController databaseController = new DatabaseController();
@@ -328,42 +371,34 @@ namespace FinanceTracker
                 }).Start();
             }
         }
-        private void OnPropertyChanged(string name)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
-        }
 
         private void ListOfStocks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateHistoricalIndexGraph();
-            buyQuantity = string.Empty;
-            BuyQuantityTextBox.Text = "0";
+            BuyQuantityTextBox.Text = String.Empty;
         }
 
         private void ListOfMyStocks_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateSelectedMyStock();
         }
+
         private void QuantityTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string input = buyQuantity;
+            string input = BuyQuantityTextBox.Text;
 
             if (!Regex.IsMatch(input, @"^[1-9][0-9]*$")) //only numbers not starting with 0
             {
                 BuyQuantityTextBox.Text = string.Empty; //wywala binding error ale apka działa idealnie? 
                 buyPrice = 0;
                 OnPropertyChanged("buyPrice");
-                OnPropertyChanged("buyQuantity");
             }
             else
             {
                 var item = (StockIndex)ListOfRealStocks.SelectedItem;
                 if (item != null)
                 {
-                    buyPrice = item.price * ulong.Parse(buyQuantity);
+                    buyPrice = item.price * ulong.Parse(BuyQuantityTextBox.Text);
                     OnPropertyChanged("buyPrice");
                 }
             }
@@ -387,7 +422,7 @@ namespace FinanceTracker
                 ulong quantity;
                 try
                 {
-                    quantity = ulong.Parse(buyQuantity);
+                    quantity = ulong.Parse(BuyQuantityTextBox.Text);
                 }
                 catch
                 {
@@ -400,13 +435,13 @@ namespace FinanceTracker
                         symbol = item.symbol,
                         indexPrice = item.price,
                         transactionDate = DateTime.Now.AddYears(-1),
-                        transactionVolume = ulong.Parse(buyQuantity),
+                        transactionVolume = quantity,
                         profit = 0
                     };
                     AddNewBoughtStock(myStock);
                 }
             }
-            buyQuantity = string.Empty;
+            BuyQuantityTextBox.Text = String.Empty;
             OnPropertyChanged("buyQuantity");
         }
 

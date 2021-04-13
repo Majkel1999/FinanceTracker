@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 namespace FinanceTracker
 {
     /// <summary>
-    ///    Klasa statyczna odpowiedzialna za otrzymywanie i parsowanie danych z serwera
+    ///    Klasa odpowiedzialna za otrzymywanie i parsowanie danych z serwera
     /// </summary>
-    public static class FinancialData
+    public class FinancialData
     {
         /// <summary>
         /// Metoda pobiera dane z serwera i deserializuje je do obiektów.
