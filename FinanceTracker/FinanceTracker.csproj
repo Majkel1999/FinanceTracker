@@ -10,6 +10,10 @@
     <DocumentationFile>C:\Users\Majkel\source\repos\FinanceTracker\FinanceTracker\FinanceTracker.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Images\Search_icon.png" />
   </ItemGroup>
