@@ -175,6 +175,7 @@ namespace FinanceTracker
                 stock.profit = ((currentItem.price - stock.indexPrice) * stock.transactionVolume);
                 databaseController.SaveChanges();
             }
+            myStockIndexesList = databaseController.myStocks.OrderBy(x => x.symbol).ToList();
         }
 
         /// <summary>
