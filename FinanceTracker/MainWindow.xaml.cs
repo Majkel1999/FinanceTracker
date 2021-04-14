@@ -225,7 +225,7 @@ namespace FinanceTracker
             {
                 LineSeries stepLineSeries = new LineSeries();
                 stepLineSeries.Values = new ChartValues<MyStockProfit>();
-                stepLineSeries.Values.AddRange(databaseController.myStockProfits.Where(x => x.transactionID == myStock.transactionID));
+                stepLineSeries.Values.AddRange(databaseController.myStockProfits.Where(x => x.transactionID == myStock.transactionID).OrderByDescending(x=>x.date));
                 ProfitChartSeries.Values = stepLineSeries.Values;
             });
         }

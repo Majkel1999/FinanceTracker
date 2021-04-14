@@ -1,0 +1,301 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FinanceTracker</name>
+    </assembly>
+    <members>
+        <member name="T:FinanceTracker.ApiRequest">
+            <summary>
+            Klasa statyczna odpowiedzialna za obsługę komunikacji z API.
+            Klucz APIKey można dostać na  https://financialmodelingprep.com/
+            </summary>
+        </member>
+        <member name="F:FinanceTracker.ApiRequest.Debug">
+            <summary>
+            Zmienna używana do testowania klasy.
+            W trybie testowym zwraca dane dla AAPL.
+            </summary>
+        </member>
+        <member name="F:FinanceTracker.ApiRequest.APIKey">
+            <summary>
+            Klucz api potrzebny do zapytan do serwera.
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.ApiRequest.GetStockPrice(System.String)">
+            <summary>
+            Metoda zwraca otrzymany string z aktualna cena danego symbolu.
+            </summary>
+            <param name="stockIndex">Symbol dla ktorego chcemy otrzymac cene</param>
+            <returns>Zawartosc wiadomosci z serwera</returns>
+        </member>
+        <member name="M:FinanceTracker.ApiRequest.GetStockIndexes">
+            <summary>
+            Pobiera pelna liste wszystkich dostepnych symboli na gieldzie.
+            </summary>
+            <returns>Lista wszystkich dostepnych symboli na gieldzie</returns>
+        </member>
+        <member name="M:FinanceTracker.ApiRequest.GetHistoricalData(System.String)">
+            <summary>
+            Metoda pobierajaca pelne dane historyczne dla danego symbolu z zewnetrznego API.
+            </summary>
+            <param name="stockIndex">Symbol dla ktorego pobrac dane</param>
+            <returns>Pelna lista danych historycznych</returns>
+        </member>
+        <member name="M:FinanceTracker.ApiRequest.GetHistoricalData(System.String,System.DateTime)">
+            <summary>
+            Metoda pobierajaca dane historyczne dla danego symbolu z zewnetrznego API,
+            rozpoczynajac od zadanej daty.
+            </summary>
+            <param name="stockIndex">Symbol dla ktorego pobrac dane</param>
+            <param name="startDate">Data od ktorej rozpoczac dane</param>
+            <returns>Lista danych historycznych</returns>
+        </member>
+        <member name="T:FinanceTracker.App">
+            <summary>
+            Interaction logic for App.xaml
+            </summary>
+            <summary>
+            App
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.App.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.App.Main">
+            <summary>
+            Application Entry Point.
+            </summary>
+        </member>
+        <member name="T:FinanceTracker.StockIndex">
+            <summary>
+            Klasa przechowaująca podstawowe dane o indeksie giełdowym:
+            symbol - skrót nazwy firmy
+            name - pełna nazwa firmy
+            price - cena udziałów danej firmy
+            </summary>
+        </member>
+        <member name="T:FinanceTracker.HistoricalIndexData">
+            <summary>
+            Klasa przechowująca fragment danych historycznych indeksu giełdowego
+            symbol - skrót nazwy firmy
+            date - data dani z którego pochodzą dane historyczne
+            price - cena udziałów z danego dnia
+            volume - ilość udziałów dostęnych na giełdzie
+            changeOverTime - zmiana ceny w stosunku do poprzedniej wartośći
+            </summary>
+        </member>
+        <member name="T:FinanceTracker.MyStock">
+            <summary>
+            Klasa przechowująca transakcje "zakupu" danego indeksu giełdowego
+            transactionID - numer transakcji
+            symbol - skrót nazwy firmy
+            transactionDate - data zakupu udziałów
+            transactionVolume - ilość zakupionych udziałów
+            indexPrice - cena po jakiej zostały zakupione dane udziały
+            profit - zysk/strata w stosunku do ceny bieżącej udziałów
+            </summary>
+        </member>
+        <member name="T:FinanceTracker.MyStockProfit">
+            <summary>
+            Klasa przechowująca informacje o zarobkach w czasie
+            Id - klucz główny wpisu
+            transactionID - identyfikator zakupu
+            symbol - skrót nazwy firmy
+            date - data stanu zarobku
+            profit - zarobek w danym dniu
+            </summary>
+        </member>
+        <member name="T:FinanceTracker.DatabaseController">
+            <summary>
+            Klasa obsługująca bazę danych.
+            </summary>
+        </member>
+        <member name="P:FinanceTracker.DatabaseController.stockIndexes">
+            <summary>
+            Tabela z bazy danych zawierająca skróty nazw oraz nazwy wszystkich indeksów giełdowych wraz z ich ceną giełdową. 
+            </summary>
+        </member>
+        <member name="P:FinanceTracker.DatabaseController.historicalIndexes">
+            <summary>
+            Tabela z bazy danych zawierająca dane historyczne (do roku w tył) indeksów giełdowych. 
+            </summary>
+        </member>
+        <member name="P:FinanceTracker.DatabaseController.myStocks">
+            <summary>
+            Tabela z bazy danych zawierająca informację o "zakupionych" przez użytkownika udziałach. 
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.DatabaseController.#ctor(System.Boolean)">
+            <summary>
+            Konstruktor klasy 
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.DatabaseController.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+            <summary>
+            Nadpisana metoda konfiguracji bazy danych. 
+            </summary>
+            <param name="options">Parametry konfiguracyjne bazy danych</param>
+        </member>
+        <member name="M:FinanceTracker.DatabaseController.Dispose">
+            <summary>
+            Nadpisana metoda usuwająca bazę danych.
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.DatabaseController.FillStockIndexesTable">
+            <summary>
+            Metoda uzupełniająca tabelę z bazy danych przechowującą informacje o cenie i oraz pełnej nazwie indeksu giełdowego.
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.DatabaseController.FillHistoricalTable(System.String)">
+            <summary>
+            Metoda uzupełniająca dane historyczne podanego w argumencie indeksu giełdowego.
+            </summary>
+            <param name="stockIndex">Symbol indeksu giełdowego, którego dane historyczne są do uzupełnienia</param>
+        </member>
+        <member name="M:FinanceTracker.DatabaseController.UpdateHistoricalTable(System.String)">
+            <summary>
+            Metoda aktualizująca dane historyczne w bazie danych dla zadanego indeksu giełdowego.
+            </summary>
+            <param name="stockIndex">Symbol indeksu giełdowego, dla którego należy zaktualizować dane historyczne</param>
+        </member>
+        <member name="M:FinanceTracker.DatabaseController.UpdateStockIndexesTable">
+            <summary>
+            Metoda aktualizująca informacje o spisie indeksów giełdowych.
+            </summary>
+        </member>
+        <member name="T:FinanceTracker.FinancialData">
+            <summary>
+               Klasa odpowiedzialna za otrzymywanie i parsowanie danych z serwera
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.FinancialData.GetStockIndexPrice(System.String)">
+            <summary>
+            Metoda pobiera dane z serwera i deserializuje je do obiektów.
+            Pobrane dane są deserializowane z JSON.
+            </summary>
+            <param name="stockIndex">Symbol dla ktorego pobrac cene</param>
+            <returns>Tablica StockPrice[] o jednym elemencie</returns>
+        </member>
+        <member name="M:FinanceTracker.FinancialData.GetAllStockIndexes">
+            <summary>
+            Metoda pobiera wszystkie indeksy dostepne na gieldzie.
+            Usuwane sa wszystkie indeksy, ktorych nazwa zawiera znak '.', cena jest rowna 0 
+            lub nazwa jest pusta, lub nie ustawiona.
+            </summary>
+            <returns>Lista StockIndex na ktorej sa wszystkie dostepne symbole</returns>
+        </member>
+        <member name="M:FinanceTracker.FinancialData.GetHistoricalIndexData(System.String)">
+            <summary>
+            Metoda pobiera pełne dane historyczne i deserializuje je do obiektu.
+            </summary>
+            <param name="stockIndex">Symbol dla ktorego pobrac dane</param>
+            <returns>Lista pelnych danych historycznych</returns>
+        </member>
+        <member name="M:FinanceTracker.FinancialData.GetHistoricalIndexData(System.String,System.DateTime)">
+            <summary>
+            Metoda pobiera dane historyczne i deserializuje je do obiektu.
+            </summary>
+            <param name="stockIndex">Symbol dla ktorego pobrac dane</param>
+            <param name="startDate">Data od ktorej pobrac dane</param>
+            <returns>Lista danych historycznych od zadanej daty</returns>
+        </member>
+        <member name="T:FinanceTracker.StockPrice">
+            <summary>
+            Klasa pomocnicza do parsowania JSON odbieranego z zewnętrzengo API
+            symbol - skrót nazwy indeksu giełdowego
+            price - cena indeksu giełdowego
+            volume - ilość dostępnych udziałów
+            </summary>
+        </member>
+        <member name="T:FinanceTracker.HistoricalData">
+            <summary>
+            Klasa pomocnicza do parsowania JSON odbieranego z zewnętrznego API
+            Klasa służy do przechowywania pojedynczych danych historycznych
+            date - informuje, z jakiego dnia pochodzą dane
+            high - najwyższa cena indeksu giełdowego z danego dnia 
+            volume - ilość udziałów dostęnych na giełdzie
+            changeOverTime - zmiana w stosunku do poprzedniej wartości ceny
+            </summary>
+        </member>
+        <member name="T:FinanceTracker.HistoricalDataList">
+            <summary>
+            Klasa pomocnicza do parsowania JSON odbieranego z zewnętrznego API
+            Klasa służy do przechowywania danych historycznych dla danego indeksu
+            symbol - skrót nazwy indeksu giełdowego
+            historical - zbiór danych HistoricalData przechowujący informacje o cenach oraz ilościach udziałów danego indeksu
+            </summary>
+        </member>
+        <member name="T:FinanceTracker.MainWindow">
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.DatabaseSetup">
+            <summary>
+            Metoda przygotowuje baze danych do pracy
+            W razie potrzeby pobiera z serwera informacje o dostepnych indeksach
+            oraz aktualizuje informacje historyczne dla pierwszego indeksu
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.ChartSetup">
+            <summary>
+            Konfiguracja maperow dla wykresow
+            Konfiguracja formaterow opisow 
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.InitialSetup">
+            <summary>
+            Wstepna konfiguracja widoku.
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.UpdateMyStockDetailData">
+            <summary>
+            Metoda odswieza informacje o aktualnych zarobkach we 
+            wszystkich zakupionych indeksach
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.UpdateHistoricalIndexGraph">
+            <summary>
+            Metoda odswieza wykres danych historycznych dla aktualnie wybranego indeksu
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.UpdateMyStockProfitGraph(FinanceTracker.MyStock)">
+            <summary>
+            Metoda odswieza oraz tworzy wykres zarobkow w czasie
+            </summary>
+            <param name="myStock">transkacja dla ktorej stworzyc wykres</param>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.UpdateMyStockProfit(FinanceTracker.MyStock)">
+            <summary>
+            Metoda odswieza dane o historycznych zarobkach zakupionych indeksow
+            </summary>
+            <param name="myStock">transakcja dla ktorej odswiezyc dane</param>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.AddNewBoughtStock(FinanceTracker.MyStock)">
+            <summary>
+            Metoda dodaje nowy zakupiony indeks do bazy danych
+            </summary>
+            <param name="myStock">Indeks do dodania</param>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.RemoveSoldStock(FinanceTracker.MyStock,System.Int32)">
+            <summary>
+            Metoda usuwa zakupiony indeks z bazy danych
+            i odswieza widok w razie potrzeby
+            </summary>
+            <param name="myStock">Transakcja do odswiezenia</param>
+            <param name="quantity">Ilosc sprzedanych akcji</param>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.UpdateSelectedMyStock">
+            <summary>
+            Metoda odswieza widok w zakladce zakupionych indeksow
+            </summary>
+        </member>
+        <member name="M:FinanceTracker.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+    </members>
+</doc>

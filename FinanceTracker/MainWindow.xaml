@@ -110,7 +110,7 @@
                                 </TextBox>
                                 <TextBlock Grid.Row="2" FontFamily="Calibri" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Path=buyPrice,UpdateSourceTrigger=PropertyChanged, StringFormat={}Price: {0:0.00}$}" Foreground="Red" Margin="10" />
                             </Grid>
-                            <Button x:Name="BuyButton" Grid.Column="1" Margin="60" VerticalAlignment="Center" Foreground="White" BorderBrush="#00707070" OpacityMask="#CC000000" Focusable="False" Click="BuyButton_Click">
+                            <Button x:Name="BuyButton" Grid.Column="1" Margin="60 30 60 30" VerticalAlignment="Center" Foreground="White" BorderBrush="#00707070" OpacityMask="#CC000000" Focusable="False" Click="BuyButton_Click" >
                                 <Button.Background>
                                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                         <GradientStop Color="#FFE2E2E2" Offset="0.003"/>
