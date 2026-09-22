@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# House Finance (TypeScript app)
+house-finance/node_modules/
+house-finance/**/dist/
+house-finance/data/
+house-finance/**/*.db

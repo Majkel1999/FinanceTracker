@@ -1,0 +1,11 @@
+services:
+  house-finance:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - house-finance-data:/data
+    restart: unless-stopped
+
+volumes:
+  house-finance-data:
