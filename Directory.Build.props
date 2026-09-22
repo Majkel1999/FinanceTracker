@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <!--
+      FinanceTracker targets net5.0-windows (WPF). This property lets the projects
+      be *compiled* on non-Windows hosts (e.g. the Linux Cloud Agent), where the
+      Windows reference packs are restored from NuGet. It has no effect when
+      building on Windows, so Visual Studio / Windows builds are unaffected.
+    -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+</Project>

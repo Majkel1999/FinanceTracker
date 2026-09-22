@@ -1,0 +1,4 @@
+{
+  "name": "FinanceTracker",
+  "install": "bash .cursor/install.sh"
+}
